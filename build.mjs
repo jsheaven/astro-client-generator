@@ -12,6 +12,7 @@ await buildForNode({
 await buildForNode({
   entryPoint: './src/cli.ts',
   outfile: './dist/cli.js',
+  debug: true,
   esBuildOptions: {
     bundle: true,
     logLevel: 'error',
