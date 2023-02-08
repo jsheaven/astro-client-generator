@@ -56,7 +56,7 @@ const printHelp = () => {
   ${colors.bold('astro-client-generator')} - generates TypeScript clients for Astro endpoints
 
   ${colors.bold('Commands:')}
-    astroClientGenerator  Generates the TypeScript clients for the endpoints.
+    generate              Generates the TypeScript clients for the endpoints.
     version               Show the program version.
     help                  Show this help message.
 
@@ -68,7 +68,7 @@ const printHelp = () => {
     --help                Show this help message.
 
   ${colors.bold('Example(s):')}
-    npx astro-client-generator --foo X
+    npx @jsheaven/astro-client-generator generate
 `)
 }
 

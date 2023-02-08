@@ -1,12 +1,13 @@
 {
   "name": "@jsheaven/astro-client-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "publishConfig": {
     "access": "public"
   },
   "bin": {
-    "astro-client-generator": "./dist/cli.esm.js"
+    "astro-client-generator": "./dist/cli.esm.js",
+    "astro-client-generator-cjs": "./dist/cli.cjs.js"
   },
   "license": "MIT",
   "description": "Generates TypeScript API client code for your Astro endpoints. No manual `fetch()` code writing anymore.",
@@ -28,7 +29,8 @@
     "prebuild": "yarn clean",
     "build": "yarn node --enable-source-maps ./build.mjs",
     "precli": "yarn build",
-    "cli": "yarn node --enable-source-maps ./dist/cli.esm.js astroClientGenerator --foo X"
+    "cli": "yarn node --enable-source-maps ./dist/cli.esm.js generate",
+    "cli-cjs": "yarn node --enable-source-maps ./dist/cli.cjs.js generate"
   },
   "author": "Aron Homberg <info@aron-homberg.de>",
   "sideEffects": false,
