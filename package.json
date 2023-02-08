@@ -9,8 +9,15 @@
     "astro-client-generator": "./dist/cli.esm.js"
   },
   "license": "MIT",
-  "description": "",
-  "keywords": [],
+  "description": "Generates TypeScript API client code for your Astro endpoints. No manual `fetch()` code writing anymore.",
+  "keywords": [
+    "client-generator",
+    "fetch",
+    "api-client",
+    "codegen",
+    "Astro",
+    "endpoints"
+  ],
   "repository": {
     "url": "git+https://github.com/jsheaven/astro-client-generator.git",
     "type": "git"
