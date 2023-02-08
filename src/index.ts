@@ -6,7 +6,7 @@ import { Project } from 'ts-morph'
 
 export interface ApiClientGeneratorOptions {
   /** folder to the API directory on disk (source code), default: './src/pages/api' */
-  root?: string
+  apiDir?: string
   /** API base URL for calling the API (only relevant if you host in a subdir, it's very unlikely), default: ''  */
   baseUrl?: string
   /** folder on disk to write the client code to, default: './src/pages/api-client'  */
@@ -18,7 +18,7 @@ export interface ApiClientGeneratorOptions {
 }
 
 export const apiGeneratorOptionsDefaults: ApiClientGeneratorOptions = {
-  root: './src/pages/api',
+  apiDir: './src/pages/api',
   baseUrl: '',
   outDir: './src/pages/api-client',
   tsConfigPath: './tsconfig.json',
@@ -70,7 +70,7 @@ export const validateConfig = (apiGeneratorOptions: ApiClientGeneratorOptions) =
 
 export interface ApiClientGeneratorOptions {
   /** folder to the API directory on disk (source code), default: './src/pages/api' */
-  root?: string
+  apiDir?: string
   /** API base URL for calling the API (only relevant if you host in a subdir, it's very unlikely), default: ''  */
   baseUrl?: string
   /** folder on disk to write the client code to, default: './src/pages/api-client'  */
@@ -293,7 +293,7 @@ export const parseApiRoutesNaive = (apiRoutes: Array<string>): Array<Partial<Api
 export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOptions) => {
   apiGeneratorOptions = validateConfig(apiGeneratorOptions)
 
-  const apiFolder = resolve(process.cwd(), apiGeneratorOptions.root)
+  const apiFolder = resolve(process.cwd(), apiGeneratorOptions.apiDir)
   const apiRoutes = fastGlob.sync(`${apiFolder}/**/*.ts`)
 
   let apiRouteParseResults: Array<Partial<ApiRouteParseResult>>

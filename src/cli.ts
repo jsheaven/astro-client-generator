@@ -3,7 +3,7 @@
 
 import * as colors from 'kleur/colors'
 import yargs from 'yargs-parser'
-import { generateClientApis } from './index'
+import { apiGeneratorOptionsDefaults, generateClientApis } from './index'
 import { getOwnVersion } from './version'
 
 export type Arguments = yargs.Arguments
@@ -28,9 +28,9 @@ export interface CLIState {
 /** Determine which action the user requested */
 export const resolveArgs = (flags: Arguments): CLIState => {
   const options: CLIState['options'] = {
-    apiDir: typeof flags.apiDir === 'string' ? flags.apiDir : undefined,
-    baseUrl: typeof flags.baseUrl === 'string' ? flags.baseUrl : undefined,
-    outDir: typeof flags.outDir === 'string' ? flags.outDir : undefined,
+    apiDir: typeof flags.apiDir === 'string' ? flags.apiDir : apiGeneratorOptionsDefaults.apiDir,
+    baseUrl: typeof flags.baseUrl === 'string' ? flags.baseUrl : apiGeneratorOptionsDefaults.baseUrl,
+    outDir: typeof flags.outDir === 'string' ? flags.outDir : apiGeneratorOptionsDefaults.outDir,
   }
 
   if (flags.version) {
