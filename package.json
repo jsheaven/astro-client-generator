@@ -1,0 +1,53 @@
+{
+  "name": "@jsheaven/astro-client-generator",
+  "version": "1.0.0",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "astro-client-generator": "./dist/cli.esm.js"
+  },
+  "license": "MIT",
+  "description": "",
+  "keywords": [],
+  "repository": {
+    "url": "git+https://github.com/jsheaven/astro-client-generator.git",
+    "type": "git"
+  },
+  "scripts": {
+    "test": "NODE_OPTIONS='--experimental-vm-modules --enable-source-maps --no-warnings' jest ./test/*.test.ts",
+    "clean": "rm -rf ./dist && rm -rf ./coverage",
+    "prebuild": "yarn clean",
+    "build": "yarn node --enable-source-maps ./build.mjs",
+    "precli": "yarn build",
+    "cli": "yarn node --enable-source-maps ./dist/cli.esm.js astroClientGenerator --foo X"
+  },
+  "author": "Aron Homberg <info@aron-homberg.de>",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.esm.js"
+    }
+  },
+  "module": "./dist/index.esm.js",
+  "main": "./dist/index.cjs.js",
+  "types": "./dist/index.esm.d.ts",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@jsheaven/easybuild": "^1.1.4",
+    "@types/jest": "^29.4.0",
+    "astro": "*",
+    "jest": "^29.4.2",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "kleur": "^4.1.5",
+    "ts-morph": "^17.0.1",
+    "yargs-parser": "^21.1.1"
+  }
+}
