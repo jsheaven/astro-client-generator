@@ -350,7 +350,7 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
     const finalFilePath = `${clientFileDir}${sep}${parsed.name}-client.ts`
 
     mkdirSync(clientFileDir, { recursive: true })
-    writeFileSync(finalFilePath, clientCode, { encoding: 'utf-8' })
+    writeFileSync(finalFilePath.toLowerCase(), clientCode, { encoding: 'utf-8' })
   })
 }
 
