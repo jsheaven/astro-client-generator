@@ -13,6 +13,7 @@
 - ✅ Generates TypeScript/JavaScript API clients for Astro endpoints (`get`, `post`, `del`, `all`, etc.)
 - ✅ Available as a simple Astro integration, API and simple to use CLI (for testing and npm scripts)
 - ✅ Uses `fetch` under the hood, therefore works isomorphic in browser and in SSR/SSG
+- ✅ Supports JWT/token based authentication using Cookies and `Authorization` header
 - ✅ Comes with two parsers: `naive` (highly optimized) and `baseline` (deoptimization, safer)
 - ✅ Just `2.64 kb` nano sized library
 - ✅ `0 byte` runtime overhead/dependencies as it just generates vanilla TS/JS code
@@ -66,7 +67,7 @@ export default defineConfig({
       // == all settings displayed here are optional. What you see here, are default values ==
 
       /** folder to the API directory on disk (source code) */
-      root: './src/pages/api',
+      apiDir: './src/pages/api',
       /** API base URL for calling the API (only relevant if you host in a subdir, it's unlikely) */
       baseUrl: '',
       /** folder on disk to write the client code to */
@@ -80,24 +81,85 @@ export default defineConfig({
 })
 ```
 
-<h2 align="center">Example usage (API, as a library)</h2>
+<h2 align="center">Lifecycle</h2>
 
-<h3 align="center">ESM</h2>
+It's important to note that you should run `astro build` (aka. `npm run build`/`yarn build`)
+whenever you change the interface definitions, imported models or the name of your endpoint
+implementations. This will make sure, that the client code is re-generated and stays in sync.
+
+<h2 align="center">How to use the generated clients?</h2>
+
+<h3 align="center">Simple example of a `get` endpoint without `ApiRequest`</h3>
+
+`src/pages/api/user.ts`
 
 ```ts
-import { generateClientApis } from '@jsheaven/astro-client-generator'
+import { APIRoute } from 'astro'
+import { User } from '../../model/User'
+import { readFile } from 'fs/promises'
 
-const result = await generateClientApis({
-  // all optional, these are just the default values
-  root: './src/pages/api',
-  baseUrl: '',
-  outDir: './src/pages/api-client',
-  parser: 'naive',
-  tsConfigPath: './tsconfig.json',
+export interface ApiResponse {
+  error?: string
+  user: Array<Todo>
+}
+
+// impl. of a simple GET endpoint -- that's why the client method will be called: userClientGet
+// in a file called user-client.ts
+export const get: APIRoute = async ({ params, request, url }) => {
+  return new Response(
+    JSON.stringify({
+      user: {
+        id: 1,
+        firstName: 'Aron',
+        email: 'foo@bar.domain',
+      },
+    } as ApiResponse),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  )
+}
+```
+
+<h4>Making requests using the generated API client</h4>
+
+It's super trivial - yet very powerful, as you hardly can go wrong because
+of the strong typing. Forget about any complexity in using `fetch()`, and
+forget about debugging for typos.
+
+You can run requests from the server-side (SSR, SSG):
+
+`src/components/Header.astro`
+
+```ts
+import { userClientGet } from '../pages/client-api/user-client'
+
+// let's say we're using Cookie authentication (@jsheaven/astro-auth),
+// or no authentication -- so we don't have to do anything
+const user = await userClientGet()
+```
+
+But feel free to use the same generated client code in any frontend framework or even vanilla JS/TS.
+To learn something new, let's use some extra parameters here -- in case we use an `Authentication: Bearer $jwt` token authentication maybe:
+
+`src/components/react/Header.tsx`
+
+```ts
+import { userClientGet } from '../pages/client-api/user-client'
+import { getToken } from '@jsheaven/astro-oauth'
+
+// because the user GET endpoint has no body, the first argument is the fetch() options
+const user = await userClientGet({
+  headers: {
+    Authentication: `Bearer ${getToken()}`,
+  },
 })
 ```
 
-<h3 align="center">CommonJS</h2>
+<h3 align="center">CommonJS</h3>
 
 ```ts
 const { generateClientApis } = require('@jsheaven/astro-client-generator')
@@ -142,3 +204,54 @@ export default defineConfig({
 ```
 
 Please take a look at the [test fixtures](test/fixtures/pages/api/) to get an idea about what syntax is definitely supported. It should cover most of the simple and advanced use-cases.
+
+<h2 align="center">Roadmap</h2>
+
+At the moment, generating client APIs for dynamic endpoints (such as `[...dynamic]` and `[foo]`, `[bar]`) isn't supported. However, this is a feature that can be implemented, but I'd only see a good
+reason to do that if the community demand is substantial.
+
+<h3 align="center">Why no initial support for dynamic routing client API generation?</h3>
+
+In traditional APIs, it's common sense / easier to transport all parameters for an endpoint
+using a single source of truth - meaning: The request body. Because of that, it is wise to simply
+define a `ApiRequest` interface for carrying the JSON data from client to the endpoint and a
+`ApiResponse` interface for the way back, but to keep the route itself static.
+
+If you're implementing dynamic endpoints, you'd usually use them to render response data in-place
+such as user-specific JSON data, user-specific or authentication-/guarded image rendering and such, following semantic routing for SEO purposes. As these routes are usually not used for traditional
+API use, and as you can, if you need the same functionality, also simply abstract the business logic
+out of the endpoint and expose it in a second, static API endpoint, I see no clear advantage for
+implementing the feature and making the implementation unncessarily complex. However, if the community
+disagrees at large, I'd definitely love to reiterate on that thought and decision.
+
+<h3 align="center">Support for basic auth / request param based authentication</h3>
+
+Because it is uncommon, insecure and a kinda dated concept to use basic auth, or
+request param based authentication methods for APIs, it is not covered by initial supported
+through this client generation library.
+
+If you'd like to provide authentication credentials in a modern and secure way,
+opt-in for OpenID authentication / OIDC flows (out-of-scope for the generator) and
+then carry a JWT token to your endpoints. Naturally, you'd simply use a Cookie which
+is automatically carried to the server as a HTTP header through the `fetch` API that
+is used in the client implementation.
+
+You can also always use the built-in request customization feature to provide e.g.
+the `Authentication` header when using an API client that has been generated by
+this library:
+
+```ts
+import { myApiClient } from '../pages/api-client/myApiClient'
+import { getToken } from '@jsheaven/astro-oauth'
+
+myApiClient(
+  /* request props/ POST body */ {
+    foo: 'bar',
+  },
+  /* optional, fetch() API option overrides */ {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  },
+)
+```

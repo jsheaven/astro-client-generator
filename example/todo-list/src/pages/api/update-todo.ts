@@ -8,11 +8,9 @@ export interface ApiResponse {
   todos: Array<Todo>
 }
 
-export interface ApiRequest {
-  id: number
-}
+export interface ApiRequest extends Partial<Todo> {}
 
-export const del: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
+export const patch: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
   let todos: Array<Todo> = []
   try {
     todos = JSON.parse(await readFile('./todos.json', { encoding: 'utf-8' }))
@@ -20,8 +18,18 @@ export const del: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
     /** let's naively pretend, it just hasn't been created yet ;) */
   }
 
-  // filter out the one with the matching id
-  todos = todos.filter((todo) => todo.id !== props.id)
+  // update
+  todos.forEach((todo) => {
+    // when matching todo is found
+    if (props.id === todo.id) {
+      if (props.isDone !== todo.isDone) {
+        todo.isDone = props.isDone
+      }
+      if (props.task !== todo.task) {
+        todo.task = props.task
+      }
+    }
+  })
 
   try {
     await writeFile('./todos.json', JSON.stringify(todos), { encoding: 'utf-8' })
@@ -29,14 +37,16 @@ export const del: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
     /** let's naively pretend that it's not that bad... amnesia... ;) */
   }
 
-  return {
-    status: 200,
-    body: JSON.stringify({
+  return new Response(
+    JSON.stringify({
       status: 'SUCCESS',
       todos,
     } as ApiResponse),
-    headers: {
-      'Content-Type': 'application/json',
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     },
-  }
+  )
 }

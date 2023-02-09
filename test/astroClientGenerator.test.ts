@@ -16,7 +16,7 @@ jest.unstable_mockModule('../dist/index.esm.js', async () => {
 
 // actually import (partly mocked)
 const {
-  analyzeHttpMethodImplemented,
+  analyzeHttpMethodsImplemented,
   cleanupInterfce,
   generateClientApis,
   lowerCaseFirst,
@@ -35,7 +35,7 @@ describe('astroClientGenerator', () => {
   it('can call astroClientGenerator - default', () => {
     generateClientApis({
       outDir: './dist/api-client',
-      root: './test/fixtures/pages/api',
+      apiDir: './test/fixtures/pages/api',
       baseUrl: '',
     })
 
@@ -45,7 +45,7 @@ describe('astroClientGenerator', () => {
   it('can call astroClientGenerator - naive', () => {
     generateClientApis({
       outDir: './dist/api-client',
-      root: './test/fixtures/pages/api',
+      apiDir: './test/fixtures/pages/api',
       baseUrl: '',
       parser: 'naive',
     })
@@ -56,7 +56,7 @@ describe('astroClientGenerator', () => {
   it('can call astroClientGenerator - baseline', () => {
     generateClientApis({
       outDir: './dist/api-client',
-      root: './test/fixtures/pages/api',
+      apiDir: './test/fixtures/pages/api',
       baseUrl: '',
       parser: 'baseline',
     })
@@ -106,36 +106,78 @@ describe('astroClientGenerator', () => {
     })
     it('correctly analyzes the HTTP method implemented', () => {
       let code = 'function get(req, res) {}'
-      let method = analyzeHttpMethodImplemented(code)
-      expect(method).toBe('GET')
+      let methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['GET'])
 
       code = 'function post(req, res) {}'
-      method = analyzeHttpMethodImplemented(code)
-      expect(method).toBe('POST')
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['POST'])
 
       code = 'function del(req, res) {}'
-      method = analyzeHttpMethodImplemented(code)
-      expect(method).toBe('DELETE')
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['DELETE'])
 
       code = 'function patch(req, res) {}'
-      method = analyzeHttpMethodImplemented(code)
-      expect(method).toBe('PATCH')
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['PATCH'])
 
       code = 'function head(req, res) {}'
-      method = analyzeHttpMethodImplemented(code)
-      expect(method).toBe('HEAD')
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['HEAD'])
 
       code = 'function put(req, res) {}'
-      method = analyzeHttpMethodImplemented(code)
-      expect(method).toBe('PUT')
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['PUT'])
+
+      code = `function put(req, res) {}\nfunction del(req, res) {}`
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['DELETE', 'PUT'])
 
       code = 'function options(req, res) {}'
-      method = analyzeHttpMethodImplemented(code)
-      expect(method).toBe('OPTIONS')
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['OPTIONS'])
 
       code = 'function all(req, res) {}'
-      method = analyzeHttpMethodImplemented(code)
-      expect(method).toEqual(['POST', 'DELETE', 'GET', 'PATCH', 'HEAD', 'PUT', 'OPTIONS'])
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['POST', 'DELETE', 'GET', 'PATCH', 'HEAD', 'PUT', 'OPTIONS'])
+    })
+
+    it('correctly analyzes the HTTP method implemented - ', () => {
+      let code = 'function get(req, res) {}'
+      let methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['GET'])
+
+      code = 'function post(req, res) {}'
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['POST'])
+
+      code = 'function del(req, res) {}'
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['DELETE'])
+
+      code = 'function patch(req, res) {}'
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['PATCH'])
+
+      code = 'function head(req, res) {}'
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['HEAD'])
+
+      code = 'function put(req, res) {}'
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['PUT'])
+
+      code = `function put(req, res) {}\nfunction del(req, res) {}`
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['DELETE', 'PUT'])
+
+      code = 'function options(req, res) {}'
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['OPTIONS'])
+
+      code = 'function all(req, res) {}'
+      methods = analyzeHttpMethodsImplemented(code)
+      expect(methods).toEqual(['POST', 'DELETE', 'GET', 'PATCH', 'HEAD', 'PUT', 'OPTIONS'])
     })
   })
 
@@ -201,6 +243,33 @@ describe('astroClientGenerator', () => {
         imports: ["import { APIContext, APIRoute } from 'astro'"],
         method: 'DELETE',
         requestInterface: 'export interface ApiRequest {\n  pageId: string\n}',
+        responseInterface: "export interface ApiResponse {\n  status: 'SUCCESS' | 'FORBIDDEN'\n  pages: Array<Page>\n}",
+        genericInterfaces: ['interface Page {\n  title: string\n  keywords: Array<Keyword>\n}'],
+        genericTypes: ['type Keyword = string | symbol'],
+      })
+    })
+
+    it('parses the API routes correctly - many', () => {
+      const apiRoutes = ['./test/fixtures/pages/api/twoInOneRequest.ts']
+      const apiRouteParseResults = parseApiRoutesNaive(apiRoutes)
+
+      expect(apiRouteParseResults.length).toBe(2)
+
+      expect(apiRouteParseResults[0]).toEqual({
+        apiRoute: './test/fixtures/pages/api/twoInOneRequest.ts',
+        imports: ["import { APIContext, APIRoute } from 'astro'"],
+        method: 'POST',
+        requestInterface: 'export interface ApiRequest {\n  pageId: string\n  pages: Array<Page>\n}',
+        responseInterface: "export interface ApiResponse {\n  status: 'SUCCESS' | 'FORBIDDEN'\n  pages: Array<Page>\n}",
+        genericInterfaces: ['interface Page {\n  title: string\n  keywords: Array<Keyword>\n}'],
+        genericTypes: ['type Keyword = string | symbol'],
+      })
+
+      expect(apiRouteParseResults[1]).toEqual({
+        apiRoute: './test/fixtures/pages/api/twoInOneRequest.ts',
+        imports: ["import { APIContext, APIRoute } from 'astro'"],
+        method: 'DELETE',
+        requestInterface: 'export interface ApiRequest {\n  pageId: string\n  pages: Array<Page>\n}',
         responseInterface: "export interface ApiResponse {\n  status: 'SUCCESS' | 'FORBIDDEN'\n  pages: Array<Page>\n}",
         genericInterfaces: ['interface Page {\n  title: string\n  keywords: Array<Keyword>\n}'],
         genericTypes: ['type Keyword = string | symbol'],

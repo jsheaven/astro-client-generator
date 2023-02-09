@@ -34,14 +34,16 @@ export const post: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
     /** let's naively pretend that it's not that bad... amnesia... ;) */
   }
 
-  return {
-    status: 200,
-    body: JSON.stringify({
+  return new Response(
+    JSON.stringify({
       status: 'SUCCESS',
       todos,
     } as ApiResponse),
-    headers: {
-      'Content-Type': 'application/json',
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     },
-  }
+  )
 }

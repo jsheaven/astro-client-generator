@@ -36,31 +36,34 @@ export const lowerCaseFirst = (text: string) => `${text.charAt(0).toLowerCase()}
 
 export const cleanupInterfce = (codeLines: Array<string>) => codeLines.join('\n').trim()
 
-export const analyzeHttpMethodImplemented = (code: string): HttpMethod | Array<HttpMethod> => {
+export const analyzeHttpMethodsImplemented = (code: string): Array<HttpMethod> => {
+  const methods: Array<HttpMethod> = []
+
   if (code.indexOf('function get') > -1 || code.indexOf('export const get') > -1) {
-    return 'GET'
+    methods.push('GET')
   }
   if (code.indexOf('function post') > -1 || code.indexOf('export const post') > -1) {
-    return 'POST'
+    methods.push('POST')
   }
   if (code.indexOf('function del') > -1 || code.indexOf('export const del') > -1) {
-    return 'DELETE'
+    methods.push('DELETE')
   }
   if (code.indexOf('function patch') > -1 || code.indexOf('export const patch') > -1) {
-    return 'PATCH'
+    methods.push('PATCH')
   }
   if (code.indexOf('function head') > -1 || code.indexOf('export const head') > -1) {
-    return 'HEAD'
+    methods.push('HEAD')
   }
   if (code.indexOf('function put') > -1 || code.indexOf('export const put') > -1) {
-    return 'PUT'
+    methods.push('PUT')
   }
   if (code.indexOf('function options') > -1 || code.indexOf('export const options') > -1) {
-    return 'OPTIONS'
+    methods.push('OPTIONS')
   }
   if (code.indexOf('function all') > -1 || code.indexOf('export const all') > -1) {
     return HttpMethods
   }
+  return methods
 }
 /** merges the default values granularly with the user-provided config overrides */
 export const validateConfig = (apiGeneratorOptions: ApiClientGeneratorOptions) => ({
@@ -139,22 +142,22 @@ export const parseApiRoutesBaseline = (
     })
 
     const genericTypes = sourceFile.getTypeAliases().map((d) => d.getText())
-    let method: HttpMethod | Array<HttpMethod>
+    let methods: Array<HttpMethod> = []
     sourceFile.getExportSymbols().forEach((d) => {
       const methodIndex = AstroHttpEndpointMethodNames.indexOf(d.getName().toUpperCase())
       if (methodIndex > -1) {
         const astroMethod = AstroHttpEndpointMethodNames[methodIndex]
         if (astroMethod === 'DEL') {
-          method = 'DELETE'
+          methods.push('DELETE')
         } else if (astroMethod === 'ALL') {
-          method = HttpMethods
+          methods = HttpMethods
         } else {
-          method = astroMethod as HttpMethod
+          methods.push(astroMethod as HttpMethod)
         }
       }
     })
 
-    const addResult = (method: HttpMethod) => {
+    methods.forEach((method) => {
       apiRouteParseResults.push({
         apiRoute,
         imports,
@@ -164,13 +167,7 @@ export const parseApiRoutesBaseline = (
         genericInterfaces,
         genericTypes,
       })
-    }
-
-    if (Array.isArray(method)) {
-      method.forEach((method) => addResult(method))
-    } else {
-      addResult(method)
-    }
+    })
   })
   return apiRouteParseResults
 }
@@ -266,7 +263,7 @@ export const parseApiRoutesNaive = (apiRoutes: Array<string>): Array<Partial<Api
       }
     })
 
-    const addResult = (method: HttpMethod) => {
+    analyzeHttpMethodsImplemented(impl).forEach((method) => {
       apiRouteParseResults.push({
         apiRoute,
         imports,
@@ -276,17 +273,24 @@ export const parseApiRoutesNaive = (apiRoutes: Array<string>): Array<Partial<Api
         genericInterfaces,
         genericTypes,
       })
-    }
-
-    const method = analyzeHttpMethodImplemented(impl)
-
-    if (Array.isArray(method)) {
-      method.forEach((method) => addResult(method))
-    } else {
-      addResult(method)
-    }
+    })
   })
   return apiRouteParseResults
+}
+
+export interface ApiRouteParsedGrouped {
+  [apiRoutePath: string]: Array<ApiRouteParseResult>
+}
+
+export const groupByApiRoute = (routes: Array<ApiRouteParseResult>): ApiRouteParsedGrouped => {
+  return routes.reduce((acc, file) => {
+    const { path } = file
+    if (!acc[path]) {
+      acc[path] = []
+    }
+    acc[path].push(file)
+    return acc
+  }, {})
 }
 
 /** discovers the API endpoints, parses and statically analyzes their code: finally calls the codegen */
@@ -326,35 +330,56 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
     return result
   })
 
-  // invoke codegen per route
-  apiRouteParseResults.forEach((parseResult: ApiRouteParseResult) => {
-    const clientCode = produceClientApiCode(parseResult, apiGeneratorOptions)
+  // in case of Astro's ALL endpoint, or when the developer decided to implement more than one
+  // endpoint / method in one file, we need to group per route to combine client code into one
+  // so that we end up with one client code file for one endpoint code file and not override
+  // code by previous code generation attempts
+  const perRoute = groupByApiRoute(apiRouteParseResults as Array<ApiRouteParseResult>)
 
+  // invoke codegen per route
+  Object.keys(perRoute).forEach((apiRoute) => {
+    const parseResults = perRoute[apiRoute]
+    const clientCode = produceClientApiCode(parseResults, apiGeneratorOptions)
     const clientFilePath = resolve(
       process.cwd(),
       apiGeneratorOptions.outDir,
-      parseResult.relativePath.replace(/^api\//, ''),
+      parseResults[0].relativePath.replace(/^api\//, ''),
     )
     const parsed = parse(clientFilePath)
     const clientFileDir = parsed.dir
+    const finalFilePath = `${clientFileDir}${sep}${parsed.name}-client.ts`
 
-    const finalFilePath = `${clientFileDir}${sep}${parsed.name}${upperCaseFirst(parseResult.method.toLowerCase())}.ts`
     mkdirSync(clientFileDir, { recursive: true })
     writeFileSync(finalFilePath, clientCode, { encoding: 'utf-8' })
   })
 }
 
-export const produceClientApiCode = (
+export const produceClientApiRequestImplCode = (
   parseResult: ApiRouteParseResult,
   apiGeneratorOptions: ApiClientGeneratorOptions,
+  requestParamDecl: string,
+  bodyInst: string,
 ) => {
-  const requestInterfaceDecl = parseResult.requestInterface ? `${parseResult.requestInterface}` : ''
-  const requestParamDecl = parseResult.requestInterface ? `payload: ApiRequest, ` : ''
-  const bodyInst =
-    parseResult.method !== 'HEAD' && parseResult.method !== 'GET' && parseResult.requestInterface
-      ? 'options.body = JSON.stringify(payload)'
-      : ''
+  return `/** return (await fetch('${apiGeneratorOptions.baseUrl}/${parseResult.path}', { method: '${
+    parseResult.method
+  }', ... })).json() */
+  export const ${lowerCaseFirst(parseResult.camelCaseName)}${upperCaseFirst(
+    parseResult.method.toLowerCase(),
+  )} = async(${requestParamDecl}options?: RequestOptions = {}): Promise<ApiResponse> => {
+    let requestUrl = '${apiGeneratorOptions.baseUrl}/${parseResult.path}'
+    if (options && options.query) {
+      requestUrl += '?' + Object.keys(options.query)
+          .map((key) => key + '=' + options.query![key])
+          .join('&');
+    }
+    delete options.query
+    options.method = '${parseResult.method}'
+    ${bodyInst}
+    return (await fetch(requestUrl, options)).json()
+  }`
+}
 
+export const produceClientApiHeaderCode = (parseResult: ApiRouteParseResult, requestInterfaceDecl: string) => {
   return `${parseResult.imports.join('\n')}
 
 ${parseResult.genericTypes.join('\n')}
@@ -371,23 +396,24 @@ export interface RequestOptions extends RequestInit {
 
 ${requestInterfaceDecl}
 
-${parseResult.responseInterface}
+${parseResult.responseInterface}`
+}
 
-/** return (await fetch('${apiGeneratorOptions.baseUrl}/${parseResult.path}', { method: '${
-    parseResult.method
-  }', ... })).json() */
-export const ${lowerCaseFirst(parseResult.camelCaseName)}${upperCaseFirst(
-    parseResult.method.toLowerCase(),
-  )} = async(${requestParamDecl}options: RequestOptions = {}): Promise<ApiResponse> => {
-  let requestUrl = '${apiGeneratorOptions.baseUrl}/${parseResult.path}'
-  if (options && options.query) {
-    requestUrl += '?' + Object.keys(options.query)
-        .map((key) => key + '=' + options.query![key])
-        .join('&');
-  }
-  delete options.query
-  options.method = '${parseResult.method}'
-  ${bodyInst}
-  return (await fetch(requestUrl, options)).json()
-}`
+export const produceClientApiCode = (
+  parseResults: Array<ApiRouteParseResult>,
+  apiGeneratorOptions: ApiClientGeneratorOptions,
+) => {
+  const requestInterfaceDecl = parseResults[0].requestInterface ? `${parseResults[0].requestInterface}` : ''
+  const requestParamDecl = parseResults[0].requestInterface ? `payload: ApiRequest, ` : ''
+
+  let bodyCode = ''
+  parseResults.forEach((parseResult) => {
+    const bodyInst =
+      parseResult.method !== 'HEAD' && parseResult.method !== 'GET' && parseResult.requestInterface
+        ? 'options.body = JSON.stringify(payload)'
+        : ''
+    bodyCode += produceClientApiRequestImplCode(parseResult, apiGeneratorOptions, requestParamDecl, bodyInst)
+  })
+  return `${produceClientApiHeaderCode(parseResults[0], requestInterfaceDecl)}
+  ${bodyCode}`
 }

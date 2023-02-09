@@ -16,14 +16,16 @@ export const get: APIRoute = async ({ params, request, url }) => {
     /** let's naively pretend, it just hasn't been created yet */
   }
 
-  return {
-    status: 200,
-    body: JSON.stringify({
+  return new Response(
+    JSON.stringify({
       status: 'SUCCESS',
       todos,
     } as ApiResponse),
-    headers: {
-      'Content-Type': 'application/json',
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     },
-  }
+  )
 }
