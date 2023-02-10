@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "astro": "^2.0.10",
-    "@astrojs/netlify": "^2.1.2",
+    "@astrojs/node": "^5.0.3",
     "@jsheaven/astro-client-generator": "1.0.8"
   }
 }
