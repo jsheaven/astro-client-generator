@@ -17,7 +17,7 @@ See: [LIVE DEMO](https://stackblitz.com/github/jsheaven/astro-client-generator?f
 - ✅ Uses `fetch` under the hood, therefore works isomorphic in browser and in SSR/SSG
 - ✅ Supports JWT/token based authentication using Cookies and `Authorization` header
 - ✅ Comes with two parsers: `naive` (highly optimized) and `baseline` (deoptimization, safer)
-- ✅ Just `2.64 kb` nano sized library
+- ✅ Just `2.26 kb` nano sized library
 - ✅ `0 byte` runtime overhead/dependencies as it just generates vanilla TS/JS code
 - ✅ Tree-shakable and side-effect free
 - ✅ Runs on Windows, Mac, Linux, CI tested
