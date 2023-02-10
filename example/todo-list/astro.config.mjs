@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config'
 import node from '@astrojs/node'
+import { hostname } from 'os'
 import { apiClientGenerator } from '@jsheaven/astro-client-generator'
 
 // https://astro.build/config
@@ -11,7 +12,8 @@ export default defineConfig({
   // enable ./src/pages/api-client generation
   integrations: [
     apiClientGenerator({
-      site: 'http://localhost:3002',
+      // example for CodeSandbox
+      site: `https://${hostname()}-3000.preview.csb.app`,
     }),
   ],
 })
