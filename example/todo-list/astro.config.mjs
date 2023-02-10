@@ -1,11 +1,11 @@
 import { defineConfig } from 'astro/config'
-import vercel from '@astrojs/vercel/serverless'
+import netlify from '@astrojs/netlify'
 import { apiClientGenerator } from '@jsheaven/astro-client-generator'
 
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: vercel(),
+  adapter: netlify(),
   // enable ./src/pages/api-client generation
   integrations: [
     apiClientGenerator({

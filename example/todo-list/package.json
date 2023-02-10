@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "astro": "^2.0.10",
-    "@astrojs/vercel": "^3.1.1",
+    "@astrojs/netlify": "^2.1.2",
     "@jsheaven/astro-client-generator": "1.0.8"
   }
 }
