@@ -39,7 +39,7 @@ describe('astroClientGenerator', () => {
       baseUrl: '',
     })
 
-    result.hooks['astro:config:setup']({ config: { site: 'http://localhost:3000' } } as any)
+    result.hooks['astro:build:done']({ config: { site: 'http://localhost:3000' } } as any)
 
     expect(generateClientApis).toBeDefined()
   })
@@ -52,7 +52,7 @@ describe('astroClientGenerator', () => {
       parser: 'naive',
     })
 
-    result.hooks['astro:config:setup']({ config: { site: 'http://localhost:3000' } } as any)
+    result.hooks['astro:build:done']({ config: { site: 'http://localhost:3000' } } as any)
 
     expect(generateClientApis).toBeDefined()
   })
@@ -66,7 +66,7 @@ describe('astroClientGenerator', () => {
       site: 'https://localhost:3001',
     })
 
-    result.hooks['astro:config:setup']({ config: { site: 'http://localhost:3000' } } as any)
+    result.hooks['astro:build:done']({ config: { site: 'http://localhost:3000' } } as any)
 
     expect(generateClientApis).toBeDefined()
   })
@@ -388,7 +388,7 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:config:setup': expect.any(Function),
+        'astro:build:done': expect.any(Function),
       },
     })
   })
@@ -406,7 +406,7 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:config:setup': expect.any(Function),
+        'astro:build:done': expect.any(Function),
       },
     })
   })
@@ -425,7 +425,7 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:config:setup': expect.any(Function),
+        'astro:build:done': expect.any(Function),
       },
     })
     expect(apiGeneratorOptions.site).toEqual('foobar2')

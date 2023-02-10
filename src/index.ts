@@ -82,7 +82,7 @@ export const apiClientGenerator = (
   return {
     name: 'astro-client-generator',
     hooks: {
-      'astro:config:setup': async () => {
+      'astro:build:done': async () => {
         generateClientApis(apiGeneratorOptions)
       },
     },
