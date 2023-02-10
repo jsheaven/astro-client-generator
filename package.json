@@ -35,6 +35,9 @@
     "cli": "yarn node --enable-source-maps ./dist/cli.esm.js generate",
     "cli-cjs": "yarn node --enable-source-maps ./dist/cli.cjs.js generate"
   },
+  "stackblitz": {
+    "startCommand": "yarn sandbox:example:dev"
+  },
   "author": "Aron Homberg <info@aron-homberg.de>",
   "sideEffects": false,
   "exports": {
