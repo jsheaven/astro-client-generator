@@ -321,11 +321,13 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
     result.relativePath = `api${result.apiRoute.replace(apiFolder, '')}`.trim()
     result.path = `${parse(result.relativePath).dir}/${parse(result.relativePath).name}`
     result.camelCaseName = result.path
-      .replace('/api/', '')
+      .replace(/^api/i, '')
       .split('/')
-      .map((part) => `${part[0].toUpperCase()}${part.substring(1)}`)
+      .map((part) => upperCaseFirst(part))
       .join('')
       .replaceAll(/[-_\ \.]/g, '')
+
+    console.log('result.camelCaseName', result.camelCaseName)
 
     return result
   })
@@ -359,24 +361,29 @@ export const produceClientApiRequestImplCode = (
   apiGeneratorOptions: ApiClientGeneratorOptions,
   requestParamDecl: string,
   bodyInst: string,
+  hasMultipleEndpointsInOneFile: boolean,
 ) => {
-  return `/** return (await fetch('${apiGeneratorOptions.baseUrl}/${parseResult.path}', { method: '${
+  const methodNameAppendix = hasMultipleEndpointsInOneFile ? upperCaseFirst(parseResult.method.toLowerCase()) : ''
+
+  return `
+
+/** return (await fetch('${apiGeneratorOptions.baseUrl}/${parseResult.path}', { method: '${
     parseResult.method
   }', ... })).json() */
-  export const ${lowerCaseFirst(parseResult.camelCaseName)}${upperCaseFirst(
-    parseResult.method.toLowerCase(),
-  )} = async(${requestParamDecl}options?: RequestOptions = {}): Promise<ApiResponse> => {
-    let requestUrl = '${apiGeneratorOptions.baseUrl}/${parseResult.path}'
-    if (options && options.query) {
-      requestUrl += '?' + Object.keys(options.query)
-          .map((key) => key + '=' + options.query![key])
-          .join('&');
-    }
-    delete options.query
-    options.method = '${parseResult.method}'
-    ${bodyInst}
-    return (await fetch(requestUrl, options)).json()
-  }`
+export const ${lowerCaseFirst(
+    parseResult.camelCaseName,
+  )}${methodNameAppendix} = async(${requestParamDecl}options: RequestOptions = {}): Promise<ApiResponse> => {
+  let requestUrl = '${apiGeneratorOptions.baseUrl}/${parseResult.path}'
+  if (options && options.query) {
+    requestUrl += '?' + Object.keys(options.query)
+        .map((key) => key + '=' + options.query![key])
+        .join('&');
+  }
+  delete options.query
+  options.method = '${parseResult.method}'
+  ${bodyInst}
+  return (await fetch(requestUrl, options)).json()
+}`
 }
 
 export const produceClientApiHeaderCode = (parseResult: ApiRouteParseResult, requestInterfaceDecl: string) => {
@@ -412,7 +419,13 @@ export const produceClientApiCode = (
       parseResult.method !== 'HEAD' && parseResult.method !== 'GET' && parseResult.requestInterface
         ? 'options.body = JSON.stringify(payload)'
         : ''
-    bodyCode += produceClientApiRequestImplCode(parseResult, apiGeneratorOptions, requestParamDecl, bodyInst)
+    bodyCode += produceClientApiRequestImplCode(
+      parseResult,
+      apiGeneratorOptions,
+      requestParamDecl,
+      bodyInst,
+      parseResults.length > 1,
+    )
   })
   return `${produceClientApiHeaderCode(parseResults[0], requestInterfaceDecl)}
   ${bodyCode}`
