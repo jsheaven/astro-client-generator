@@ -24,6 +24,7 @@
     "type": "git"
   },
   "scripts": {
+    "preexample:dev": "yarn --cwd ./example/todo-list",
     "example:dev": "yarn --cwd ./example/todo-list dev",
     "test": "NODE_OPTIONS='--experimental-vm-modules --enable-source-maps --no-warnings' jest ./test/*.test.ts",
     "clean": "rm -rf ./dist && rm -rf ./coverage",
