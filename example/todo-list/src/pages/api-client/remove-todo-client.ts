@@ -27,7 +27,7 @@ export interface ApiResponse {
 
 /** return (await fetch('/api/remove-todo', { method: 'DELETE', ... })).json() */
 export const removeTodo = async(payload: ApiRequest, options: RequestOptions = {}): Promise<ApiResponse> => {
-  let requestUrl = 'http://localhost:3002/api/remove-todo'
+  let requestUrl = 'http://localhost:3000/api/remove-todo'
   if (options && options.query) {
     requestUrl += '?' + Object.keys(options.query)
         .map((key) => key + '=' + options.query![key])

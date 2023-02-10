@@ -12,6 +12,6 @@
   "dependencies": {
     "astro": "^2.0.10",
     "@astrojs/node": "^5.0.3",
-    "@jsheaven/astro-client-generator": "1.0.8"
+    "@jsheaven/astro-client-generator": "1.0.10"
   }
 }

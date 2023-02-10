@@ -13,7 +13,7 @@ export default defineConfig({
   integrations: [
     apiClientGenerator({
       // example for CodeSandbox
-      site: `https://${hostname()}-3000.preview.csb.app`,
+      site: process.env.IS_CODESANDBOX ? `https://${hostname()}-3000.preview.csb.app` : 'http://localhost:3000',
     }),
   ],
 })

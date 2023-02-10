@@ -473,10 +473,10 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@jsheaven/astro-client-generator@1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@jsheaven/astro-client-generator/-/astro-client-generator-1.0.8.tgz#d82e36b35e617ced6faf7af27b4cc91b8c8877dd"
-  integrity sha512-OiVUxm/t6n5aQYz01tNAP6jXPO9WhsuLs8j+oGYXG2lwwiTqriYfzEI6flGDDKihBzvKxdqWYq9Ba0vVkBevbg==
+"@jsheaven/astro-client-generator@1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@jsheaven/astro-client-generator/-/astro-client-generator-1.0.10.tgz#f77ce8bcdb1456adf5196837acc715a8540872cd"
+  integrity sha512-Cu45oRnmATj0Dx3gfzlfBACpLXT0yfypl7/0t1R2ARGBaC6bOqBZlsLWdWctQxageeb19P/eqk93GZ6vYpDw2Q==
   dependencies:
     kleur "^4.1.5"
     ts-morph "^17.0.1"

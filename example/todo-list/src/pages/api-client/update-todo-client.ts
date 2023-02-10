@@ -25,7 +25,7 @@ export interface ApiResponse {
 
 /** return (await fetch('/api/update-todo', { method: 'PATCH', ... })).json() */
 export const updateTodo = async(payload: ApiRequest, options: RequestOptions = {}): Promise<ApiResponse> => {
-  let requestUrl = 'http://localhost:3002/api/update-todo'
+  let requestUrl = 'http://localhost:3000/api/update-todo'
   if (options && options.query) {
     requestUrl += '?' + Object.keys(options.query)
         .map((key) => key + '=' + options.query![key])
