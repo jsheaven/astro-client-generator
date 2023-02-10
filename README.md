@@ -8,6 +8,8 @@
 
 2. As an Astro developer, I want type-safety and auto-complete in my IDE when calling my Astro endpoints.
 
+See: [LIVE DEMO](https://stackblitz.com/github/jsheaven/astro-client-generator?file=example%2Ftodo-list%2Fastro.config.mjs,example%2Ftodo-list%2Fsrc%2Fpages%2Findex.astro)
+
 <h2 align="center">Features</h2>
 
 - ✅ Generates TypeScript/JavaScript API clients for Astro endpoints (`get`, `post`, `del`, `all`, etc.)
