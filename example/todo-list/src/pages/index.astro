@@ -1,11 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import { getTodos } from './api-client/get-todos-client'
 
-// simply fetch in SSR mode
-// this doesn't work in SSG / output: "static" case!
-// you'd need to fetch the todo's in frontend <script> code then
-const todos = await getTodos()
+// load DB
+const currentTodos = (await import('../../todos.json')).default
 ---
 
 <Layout title="Welcome to Astro.">
@@ -21,7 +18,7 @@ const todos = await getTodos()
     <h3>My TODOs:</h3>
     {
       // render todos
-      todos.todos.map((todo) => (
+      currentTodos.map((todo) => (
         <li>
           <input
             type="checkbox"
