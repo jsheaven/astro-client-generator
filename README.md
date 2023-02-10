@@ -22,6 +22,9 @@
 - ✅ First class TypeScript support
 - ✅ 100% Unit Test coverage
 
+See [the TODO list example](example/todo-list/src/pages/index.astro).
+Example of the [generated API client code](example/todo-list/src/pages/api-client/).
+
 <h2 align="center">Example usage / test it (CLI)</h2>
 
 If you want to test it, simply run this command in your Astro project root folder:
@@ -65,7 +68,8 @@ export default defineConfig({
     apiClientGenerator({
 
       // == all settings displayed here are optional. What you see here, are default values ==
-
+      /** site URL to request from */
+      site: 'http://localhost:3000',
       /** folder to the API directory on disk (source code) */
       apiDir: './src/pages/api',
       /** API base URL for calling the API (only relevant if you host in a subdir, it's unlikely) */
@@ -135,11 +139,11 @@ You can run requests from the server-side (SSR, SSG):
 `src/components/Header.astro`
 
 ```ts
-import { userClientGet } from '../pages/client-api/user-client'
+import { getUser } from '../pages/client-api/user-client'
 
 // let's say we're using Cookie authentication (@jsheaven/astro-auth),
 // or no authentication -- so we don't have to do anything
-const user = await userClientGet()
+const user = await getUser()
 ```
 
 But feel free to use the same generated client code in any frontend framework or even vanilla JS/TS.
@@ -148,11 +152,11 @@ To learn something new, let's use some extra parameters here -- in case we use a
 `src/components/react/Header.tsx`
 
 ```ts
-import { userClientGet } from '../pages/client-api/user-client'
+import { getUser } from '../pages/client-api/user-client'
 import { getToken } from '@jsheaven/astro-oauth'
 
 // because the user GET endpoint has no body, the first argument is the fetch() options
-const user = await userClientGet({
+const user = await getUser({
   headers: {
     Authentication: `Bearer ${getToken()}`,
   },

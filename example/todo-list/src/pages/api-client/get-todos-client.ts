@@ -25,7 +25,7 @@ export interface ApiResponse {
 
 /** return (await fetch('/api/get-todos', { method: 'GET', ... })).json() */
 export const getTodos = async(options: RequestOptions = {}): Promise<ApiResponse> => {
-  let requestUrl = '/api/get-todos'
+  let requestUrl = 'http://localhost:3002/api/get-todos'
   if (options && options.query) {
     requestUrl += '?' + Object.keys(options.query)
         .map((key) => key + '=' + options.query![key])

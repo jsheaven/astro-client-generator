@@ -12,8 +12,9 @@ export interface ApiRequest {
   id: number
 }
 
-export const del: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
+export const del: APIRoute = async ({ request }) => {
   let todos: Array<Todo> = []
+  const body: ApiRequest = await request.json()
   try {
     todos = JSON.parse(await readFile('./todos.json', { encoding: 'utf-8' }))
   } catch (e) {
@@ -21,7 +22,7 @@ export const del: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
   }
 
   // filter out the one with the matching id
-  todos = todos.filter((todo) => todo.id !== props.id)
+  todos = todos.filter((todo) => todo.id !== body.id)
 
   try {
     await writeFile('./todos.json', JSON.stringify(todos), { encoding: 'utf-8' })

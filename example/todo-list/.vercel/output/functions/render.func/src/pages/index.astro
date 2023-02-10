@@ -13,7 +13,7 @@ const todos = await getTodos()
     <h1><span class="text-gradient">@jsheaven/astro-client-generator</span></h1>
 
     <p class="instructions">
-      Find the API endpoints implemented in <code>src/pages/api/*.ts</code>.<br />
+      You'll find the API endpoints implemented in <code>src/pages/api/*.ts</code>.<br />
       <strong>Code Challenge:</strong> Checkout the generated <code>src/pages/api-client/*</code> files and
       <code>src/pages/index.astro</code> and how the API client generation works.
     </p>
@@ -144,18 +144,13 @@ const todos = await getTodos()
     color: rgb(var(--accent));
   }
 
-  button[name='todo-delete'],
-  button#add-todo-button {
+  button[name='todo-delete'] {
     background-color: var(--primary);
     color: #fff;
     border: 2px solid #000;
     cursor: pointer;
     padding: 4px;
     margin-left: 4px;
-  }
-
-  button#add-todo-button {
-    background-color: var(--secondary);
   }
 
   li {

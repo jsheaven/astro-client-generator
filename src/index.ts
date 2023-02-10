@@ -15,6 +15,8 @@ export interface ApiClientGeneratorOptions {
   tsConfigPath?: string
   /** parser to use. 'naive' comes with constraints (non-standard-compliant), 'baseline' is 900x slower, default: 'naive' */
   parser?: 'naive' | 'baseline'
+  /** site URL to request from. Optional, usually auto-discovered from Astro config  */
+  site?: string
 }
 
 export const apiGeneratorOptionsDefaults: ApiClientGeneratorOptions = {
@@ -22,6 +24,7 @@ export const apiGeneratorOptionsDefaults: ApiClientGeneratorOptions = {
   baseUrl: '',
   outDir: './src/pages/api-client',
   tsConfigPath: './tsconfig.json',
+  site: 'http://localhost:3000',
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'HEAD' | 'PUT' | 'OPTIONS'
@@ -70,21 +73,6 @@ export const validateConfig = (apiGeneratorOptions: ApiClientGeneratorOptions) =
   ...apiGeneratorOptionsDefaults,
   ...apiGeneratorOptions,
 })
-
-export interface ApiClientGeneratorOptions {
-  /** folder to the API directory on disk (source code), default: './src/pages/api' */
-  apiDir?: string
-  /** API base URL for calling the API (only relevant if you host in a subdir, it's very unlikely), default: ''  */
-  baseUrl?: string
-  /** folder on disk to write the client code to, default: './src/pages/api-client'  */
-  outDir?: string
-  /** path to tsconfig.json, default: './tsconfig.json' as it is expected to run in project root */
-  tsConfigPath?: string
-  /** parser to use. 'naive' comes with constraints (non-standard-compliant), 'baseline' is 900x slower, default: 'naive' */
-  parser?: 'naive' | 'baseline'
-  /** site URL to request from. Optional, usually auto-discovered from Astro config  */
-  site?: string
-}
 
 /** Astro integration function to add to integrations [apiClientGenerator()] array in astro.config.js */
 export const apiClientGenerator = (

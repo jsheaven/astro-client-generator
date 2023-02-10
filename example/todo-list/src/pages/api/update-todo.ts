@@ -10,8 +10,9 @@ export interface ApiResponse {
 
 export interface ApiRequest extends Partial<Todo> {}
 
-export const patch: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
+export const patch: APIRoute = async ({ request }) => {
   let todos: Array<Todo> = []
+  const body: ApiRequest = await request.json()
   try {
     todos = JSON.parse(await readFile('./todos.json', { encoding: 'utf-8' }))
   } catch (e) {
@@ -21,12 +22,12 @@ export const patch: APIRoute = async ({ props }: APIContext<ApiRequest>) => {
   // update
   todos.forEach((todo) => {
     // when matching todo is found
-    if (props.id === todo.id) {
-      if (props.isDone !== todo.isDone) {
-        todo.isDone = props.isDone
+    if (body.id === todo.id) {
+      if (body.isDone !== todo.isDone) {
+        todo.isDone = body.isDone
       }
-      if (props.task !== todo.task) {
-        todo.task = props.task
+      if (body.task !== todo.task) {
+        todo.task = body.task
       }
     }
   })

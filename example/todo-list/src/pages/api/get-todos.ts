@@ -10,6 +10,8 @@ export interface ApiResponse {
 
 export const get: APIRoute = async ({ params, request, url }) => {
   let todos: Array<Todo> = []
+
+  // read from "DB"
   try {
     todos = JSON.parse(await readFile('./todos.json', { encoding: 'utf-8' }))
   } catch (e) {
