@@ -2,10 +2,6 @@ import { APIContext, APIRoute } from 'astro'
 import { Todo } from '../../model/Todo'
 import { readFile, writeFile } from 'fs/promises'
 
-
-
-
-
 export interface QueryMap {
   [key: string]: string
 }
@@ -21,16 +17,19 @@ export interface ApiResponse {
   error?: string
   todos: Array<Todo>
 }
-  /** return (await fetch('/api/create-todo', { method: 'POST', ... })).json() */
-  export const apiCreatetodoPost = async(payload: ApiRequest, options?: RequestOptions = {}): Promise<ApiResponse> => {
-    let requestUrl = '/api/create-todo'
-    if (options && options.query) {
-      requestUrl += '?' + Object.keys(options.query)
-          .map((key) => key + '=' + options.query![key])
-          .join('&');
-    }
-    delete options.query
-    options.method = 'POST'
-    options.body = JSON.stringify(payload)
-    return (await fetch(requestUrl, options)).json()
+
+/** return (await fetch('/api/create-todo', { method: 'POST', ... })).json() */
+export const createtodo = async (payload: ApiRequest, options: RequestOptions = {}): Promise<ApiResponse> => {
+  let requestUrl = '/api/create-todo'
+  if (options && options.query) {
+    requestUrl +=
+      '?' +
+      Object.keys(options.query)
+        .map((key) => key + '=' + options.query![key])
+        .join('&')
   }
+  delete options.query
+  options.method = 'POST'
+  options.body = JSON.stringify(payload)
+  return (await fetch(requestUrl, options)).json()
+}

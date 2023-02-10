@@ -325,7 +325,8 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
       .split('/')
       .map((part) => upperCaseFirst(part))
       .join('')
-      .replaceAll(/[-_\ \.]/g, '')
+      .split(/[-_\ \.]/g)
+      .reduce((prev, current) => prev + upperCaseFirst(current), '')
 
     console.log('result.camelCaseName', result.camelCaseName)
 
