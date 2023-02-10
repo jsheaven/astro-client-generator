@@ -82,6 +82,8 @@ export interface ApiClientGeneratorOptions {
   tsConfigPath?: string
   /** parser to use. 'naive' comes with constraints (non-standard-compliant), 'baseline' is 900x slower, default: 'naive' */
   parser?: 'naive' | 'baseline'
+  /** site URL to request from. Optional, usually auto-discovered from Astro config  */
+  site?: string
 }
 
 /** Astro integration function to add to integrations [apiClientGenerator()] array in astro.config.js */
@@ -92,7 +94,8 @@ export const apiClientGenerator = (
   return {
     name: 'astro-client-generator',
     hooks: {
-      'astro:build:done': async () => {
+      'astro:config:setup': async ({ config }) => {
+        if (!apiGeneratorOptions.site) apiGeneratorOptions.site = config.site
         generateClientApis(apiGeneratorOptions)
       },
     },
@@ -328,8 +331,6 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
       .split(/[-_\ \.]/g)
       .reduce((prev, current) => prev + upperCaseFirst(current), '')
 
-    console.log('result.camelCaseName', result.camelCaseName)
-
     return result
   })
 
@@ -374,7 +375,7 @@ export const produceClientApiRequestImplCode = (
 export const ${lowerCaseFirst(
     parseResult.camelCaseName,
   )}${methodNameAppendix} = async(${requestParamDecl}options: RequestOptions = {}): Promise<ApiResponse> => {
-  let requestUrl = '${apiGeneratorOptions.baseUrl}/${parseResult.path}'
+  let requestUrl = '${apiGeneratorOptions.site}${apiGeneratorOptions.baseUrl}/${parseResult.path}'
   if (options && options.query) {
     requestUrl += '?' + Object.keys(options.query)
         .map((key) => key + '=' + options.query![key])

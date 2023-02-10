@@ -2,6 +2,10 @@ import { APIContext, APIRoute } from 'astro'
 import { Todo } from '../../model/Todo'
 import { readFile, writeFile } from 'fs/promises'
 
+
+
+
+
 export interface QueryMap {
   [key: string]: string
 }
@@ -17,16 +21,15 @@ export interface ApiResponse {
   error?: string
   todos: Array<Todo>
 }
+  
 
 /** return (await fetch('/api/update-todo', { method: 'PATCH', ... })).json() */
-export const updatetodo = async (payload: ApiRequest, options: RequestOptions = {}): Promise<ApiResponse> => {
+export const updateTodo = async(payload: ApiRequest, options: RequestOptions = {}): Promise<ApiResponse> => {
   let requestUrl = '/api/update-todo'
   if (options && options.query) {
-    requestUrl +=
-      '?' +
-      Object.keys(options.query)
+    requestUrl += '?' + Object.keys(options.query)
         .map((key) => key + '=' + options.query![key])
-        .join('&')
+        .join('&');
   }
   delete options.query
   options.method = 'PATCH'

@@ -33,33 +33,40 @@ describe('astroClientGenerator', () => {
     jest.restoreAllMocks()
   })
   it('can call astroClientGenerator - default', () => {
-    generateClientApis({
+    const result = apiClientGenerator({
       outDir: './dist/api-client',
       apiDir: './test/fixtures/pages/api',
       baseUrl: '',
     })
 
+    result.hooks['astro:config:setup']({ config: { site: 'http://localhost:3000' } } as any)
+
     expect(generateClientApis).toBeDefined()
   })
 
   it('can call astroClientGenerator - naive', () => {
-    generateClientApis({
+    const result = apiClientGenerator({
       outDir: './dist/api-client',
       apiDir: './test/fixtures/pages/api',
       baseUrl: '',
       parser: 'naive',
     })
 
+    result.hooks['astro:config:setup']({ config: { site: 'http://localhost:3000' } } as any)
+
     expect(generateClientApis).toBeDefined()
   })
 
   it('can call astroClientGenerator - baseline', () => {
-    generateClientApis({
+    const result = apiClientGenerator({
       outDir: './dist/api-client',
       apiDir: './test/fixtures/pages/api',
       baseUrl: '',
       parser: 'baseline',
+      site: 'https://localhost:3001',
     })
+
+    result.hooks['astro:config:setup']({ config: { site: 'http://localhost:3000' } } as any)
 
     expect(generateClientApis).toBeDefined()
   })
@@ -381,7 +388,7 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:build:done': expect.any(Function),
+        'astro:config:setup': expect.any(Function),
       },
     })
   })
@@ -399,9 +406,28 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:build:done': expect.any(Function),
+        'astro:config:setup': expect.any(Function),
       },
     })
-    result.hooks['astro:build:done'](null)
+  })
+
+  it('returns the expected AstroIntegration object - with site set', async () => {
+    jest.clearAllMocks()
+    const apiGeneratorOptions = {
+      root: './src/pages/api',
+      baseUrl: '',
+      outDir: './src/pages/api-client',
+      tsConfigPath: './tsconfig.json',
+      parser: 'naive',
+      site: 'foobar2',
+    } as any
+    const result = apiClientGenerator(apiGeneratorOptions)
+    expect(result).toEqual({
+      name: 'astro-client-generator',
+      hooks: {
+        'astro:config:setup': expect.any(Function),
+      },
+    })
+    expect(apiGeneratorOptions.site).toEqual('foobar2')
   })
 })
