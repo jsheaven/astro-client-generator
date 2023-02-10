@@ -44,9 +44,9 @@ const todos = await getTodos()
     </p>
 
     <script>
-      import { createTodo } from './api-client/create-todo-client'
-      import { removeTodo } from './api-client/remove-todo-client'
-      import { updateTodo } from './api-client/update-todo-client'
+      const { createTodo } = await import('./api-client/create-todo-client')
+      const { removeTodo } = await import('./api-client/remove-todo-client')
+      const { updateTodo } = await import('./api-client/update-todo-client')
 
       // === add todo
       const addBtn = document.querySelector('#add-todo-button') as HTMLButtonElement
