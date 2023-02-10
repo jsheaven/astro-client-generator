@@ -24,9 +24,9 @@
     "type": "git"
   },
   "scripts": {
-    "preexample:dev": "yarn --cwd ./example/todo-list",
-    "example:dev": "yarn --cwd ./example/todo-list build",
-    "postexample:dev": "yarn --cwd ./example/todo-list dev",
+    "sandbox:preexample:dev": "IS_SANDBOX=true yarn --cwd ./example/todo-list",
+    "sandbox:example:dev": "IS_SANDBOX=true yarn --cwd ./example/todo-list build",
+    "sandbox:postexample:dev": "IS_SANDBOX=true yarn --cwd ./example/todo-list dev",
     "test": "NODE_OPTIONS='--experimental-vm-modules --enable-source-maps --no-warnings' jest ./test/*.test.ts",
     "clean": "rm -rf ./dist && rm -rf ./coverage",
     "prebuild": "yarn clean",
