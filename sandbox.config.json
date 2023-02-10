@@ -1,0 +1,6 @@
+{
+  "node": "16",
+  "port": 3000,
+  "view": "browser",
+  "startScript": "example:dev"
+}
