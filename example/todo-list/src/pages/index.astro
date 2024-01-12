@@ -41,6 +41,7 @@ const currentTodos = (await import('../../todos.json')).default
     </p>
 
     <script>
+      console.log('???')
       const { createTodo } = await import('./api-client/create-todo-client')
       const { removeTodo } = await import('./api-client/remove-todo-client')
       const { updateTodo } = await import('./api-client/update-todo-client')
@@ -49,7 +50,9 @@ const currentTodos = (await import('../../todos.json')).default
       const addBtn = document.querySelector('#add-todo-button') as HTMLButtonElement
       const addInput = document.querySelector('#add-todo-input') as HTMLInputElement
 
+      console.log(addBtn)
       const onAddTodo = async () => {
+        console.log('asdasd')
         await createTodo({
           isDone: false,
           task: addInput.value,
