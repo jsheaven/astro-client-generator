@@ -388,8 +388,8 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:config:setup': expect.any(Function),
-        'astro:build:done': expect.any(Function),
+        'astro:server:start': expect.any(Function),
+        'astro:build:setup': expect.any(Function),
       },
     })
   })
@@ -407,8 +407,8 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:config:setup': expect.any(Function),
-        'astro:build:done': expect.any(Function),
+        'astro:server:start': expect.any(Function),
+        'astro:build:setup': expect.any(Function),
       },
     })
   })
@@ -427,8 +427,8 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
-        'astro:config:setup': expect.any(Function),
-        'astro:build:done': expect.any(Function),
+        'astro:server:start': expect.any(Function),
+        'astro:build:setup': expect.any(Function),
       },
     })
     expect(apiGeneratorOptions.site).toEqual('foobar2')

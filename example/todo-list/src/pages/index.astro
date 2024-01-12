@@ -57,7 +57,7 @@ const currentTodos = JSON.parse(readFileSync('./todos.json', 'utf-8'))
           isDone: false,
           task: addInput.value,
         })
-        //document.location.reload()
+        document.location.reload()
       }
 
       addBtn.onclick = () => {
@@ -83,7 +83,6 @@ const currentTodos = JSON.parse(readFileSync('./todos.json', 'utf-8'))
             todo.isDone = checkbox.checked
 
             await updateTodo(todo)
-            //document.location.reload()
           }),
       )
 
@@ -99,7 +98,7 @@ const currentTodos = JSON.parse(readFileSync('./todos.json', 'utf-8'))
             await removeTodo({
               id: todo.id,
             })
-            //document.location.reload()
+            document.location.reload()
           }),
       )
     </script>

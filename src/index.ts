@@ -83,7 +83,17 @@ export const apiClientGenerator = (
   return {
     name: 'astro-client-generator',
     hooks: {
-      'astro:config:setup': async () => {
+
+      'astro:server:start': async ({ address }) => {
+
+        const actualSite = address.family === 'IPv4' ? 
+          `http://${address.address}:${address.port}` :
+          `http://[${address.address}]:${address.port}`
+
+        if (apiGeneratorOptions.site && apiGeneratorOptions.site !== actualSite) {
+          console.log(`🔄 Endpoint host has changed to ${actualSite}. Updating site accordingly.`)
+          apiGeneratorOptions.site = actualSite
+        }
 
         const watcher = watch(apiGeneratorOptions.apiDir, {
           ignoreInitial: true,
@@ -107,14 +117,17 @@ export const apiClientGenerator = (
           if (stats.ctimeMs + 100 > Date.now()) {
             return
           }
+
           console.log('🖊️ Endpoint added: ', path)
           generateClientApis(apiGeneratorOptions)
         })
-        
+
         // initial build
         generateClientApis(apiGeneratorOptions)
       },
-      'astro:build:done': async () => {
+
+      'astro:build:setup': async () => {
+        // eager generation for initial imports to work well
         generateClientApis(apiGeneratorOptions)
       },
     },
@@ -360,6 +373,7 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
   // so that we end up with one client code file for one endpoint code file and not override
   // code by previous code generation attempts
   const perRoute = groupByApiRoute(apiRouteParseResults as Array<ApiRouteParseResult>)
+  const codeFiles: Array<string> = []
 
   // invoke codegen per route
   Object.keys(perRoute).forEach((apiRoute) => {
@@ -373,6 +387,7 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
     const parsed = parse(clientFilePath)
     const clientFileDir = parsed.dir
     const finalFilePath = `${clientFileDir}${sep}${parsed.name}-client.ts`.toLowerCase()
+    codeFiles.push(finalFilePath)
 
     const project = new Project({
       tsConfigFilePath: apiGeneratorOptions.tsConfigPath,
@@ -395,13 +410,6 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
     sourceFile.organizeImports();
     sourceFile.formatText();
     sourceFile.saveSync();
-
-    // final formatting
-    const code = readFileSync(finalFilePath, { encoding: 'utf-8' })
-    // remove all double-blank lines (non-trivial to do using ts-morph)
-    const formattedCode = code.replace(/^\n\n$/g, '\n')
-    // remove all blank lines before opening brackets
-    writeFileSync(finalFilePath, formattedCode, { encoding: 'utf-8' })
   })
 
   console.log('🚀 Finished building endpoint clients.')
