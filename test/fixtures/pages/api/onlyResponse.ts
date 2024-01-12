@@ -21,22 +21,21 @@ export interface ApiResponse {
   pages: Array<Page>
 }
 
-export const get: APIRoute = async ({ params, request, url }) => {
+export const GET: APIRoute = async ({ params, request, url }) => {
   const { isLoggedIn } = await checkAuth(request)
 
-  return {
+  return new Response(JSON.stringify({
+    status: isLoggedIn ? 'SUCCESS' : 'FORBIDDEN',
+    pages: [
+      {
+        title: 'FooBar',
+        keywords: ['foo', 'bar'],
+      },
+    ] as Array<Page>,
+  }), {
     status: isLoggedIn ? 200 : 403,
-    body: JSON.stringify({
-      status: isLoggedIn ? 'SUCCESS' : 'FORBIDDEN',
-      pages: [
-        {
-          title: 'FooBar',
-          keywords: ['foo', 'bar'],
-        },
-      ] as Array<Page>,
-    }),
     headers: {
       'Content-Type': 'application/json',
     },
-  }
+  })
 }

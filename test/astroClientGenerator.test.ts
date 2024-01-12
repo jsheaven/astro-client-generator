@@ -112,77 +112,77 @@ describe('astroClientGenerator', () => {
       jest.restoreAllMocks()
     })
     it('correctly analyzes the HTTP method implemented', () => {
-      let code = 'function get(req, res) {}'
+      let code = 'function GET(req, res) {}'
       let methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['GET'])
 
-      code = 'function post(req, res) {}'
+      code = 'function POST(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['POST'])
 
-      code = 'function del(req, res) {}'
+      code = 'function DELETE(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['DELETE'])
 
-      code = 'function patch(req, res) {}'
+      code = 'function PATCH(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['PATCH'])
 
-      code = 'function head(req, res) {}'
+      code = 'function HEAD(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['HEAD'])
 
-      code = 'function put(req, res) {}'
+      code = 'function PUT(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['PUT'])
 
-      code = `function put(req, res) {}\nfunction del(req, res) {}`
+      code = `function PUT(req, res) {}\nfunction DELETE(req, res) {}`
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['DELETE', 'PUT'])
 
-      code = 'function options(req, res) {}'
+      code = 'function OPTIONS(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['OPTIONS'])
 
-      code = 'function all(req, res) {}'
+      code = 'function ALL(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['POST', 'DELETE', 'GET', 'PATCH', 'HEAD', 'PUT', 'OPTIONS'])
     })
 
     it('correctly analyzes the HTTP method implemented - ', () => {
-      let code = 'function get(req, res) {}'
+      let code = 'function GET(req, res) {}'
       let methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['GET'])
 
-      code = 'function post(req, res) {}'
+      code = 'function POST(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['POST'])
 
-      code = 'function del(req, res) {}'
+      code = 'function DELETE(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['DELETE'])
 
-      code = 'function patch(req, res) {}'
+      code = 'function PATCH(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['PATCH'])
 
-      code = 'function head(req, res) {}'
+      code = 'function HEAD(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['HEAD'])
 
-      code = 'function put(req, res) {}'
+      code = 'function PUT(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['PUT'])
 
-      code = `function put(req, res) {}\nfunction del(req, res) {}`
+      code = `function PUT(req, res) {}\nfunction DELETE(req, res) {}`
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['DELETE', 'PUT'])
 
-      code = 'function options(req, res) {}'
+      code = 'function OPTIONS(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['OPTIONS'])
 
-      code = 'function all(req, res) {}'
+      code = 'function ALL(req, res) {}'
       methods = analyzeHttpMethodsImplemented(code)
       expect(methods).toEqual(['POST', 'DELETE', 'GET', 'PATCH', 'HEAD', 'PUT', 'OPTIONS'])
     })

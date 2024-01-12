@@ -12,7 +12,7 @@ export interface ApiRequest {
   id: number
 }
 
-export const del: APIRoute = async ({ request }) => {
+export const DELETE: APIRoute = async ({ request }) => {
   let todos: Array<Todo> = []
   const body: ApiRequest = await request.json()
   try {

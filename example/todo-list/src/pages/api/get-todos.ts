@@ -8,7 +8,7 @@ export interface ApiResponse {
   todos: Array<Todo>
 }
 
-export const get: APIRoute = async ({ params, request, url }) => {
+export const GET: APIRoute = async ({ params, request, url }) => {
   let todos: Array<Todo> = []
 
   // read from "DB"

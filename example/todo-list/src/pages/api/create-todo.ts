@@ -10,7 +10,7 @@ export interface ApiResponse {
 
 export interface ApiRequest extends Partial<Todo> {}
 
-export const post: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }) => {
   let todos: Array<Todo> = []
 
   const body: ApiRequest = await request.json()

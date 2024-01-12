@@ -29,7 +29,7 @@ export const apiGeneratorOptionsDefaults: ApiClientGeneratorOptions = {
 
 export type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'HEAD' | 'PUT' | 'OPTIONS'
 
-export const AstroHttpEndpointMethodNames = ['GET', 'POST', 'DEL', 'PATCH', 'HEAD', 'PUT', 'OPTIONS', 'ALL']
+export const AstroHttpEndpointMethodNames = ['GET', 'POST', 'DELETE', 'PATCH', 'HEAD', 'PUT', 'OPTIONS', 'ALL']
 export const HttpMethods: Array<HttpMethod> = ['POST', 'DELETE', 'GET', 'PATCH', 'HEAD', 'PUT', 'OPTIONS']
 
 export type InterfacePosition = [number, number]
@@ -42,28 +42,28 @@ export const cleanupInterfce = (codeLines: Array<string>) => codeLines.join('\n'
 export const analyzeHttpMethodsImplemented = (code: string): Array<HttpMethod> => {
   const methods: Array<HttpMethod> = []
 
-  if (code.indexOf('function get') > -1 || code.indexOf('export const get') > -1) {
+  if (code.indexOf('function GET') > -1 || code.indexOf('export const GET') > -1) {
     methods.push('GET')
   }
-  if (code.indexOf('function post') > -1 || code.indexOf('export const post') > -1) {
+  if (code.indexOf('function POST') > -1 || code.indexOf('export const POST') > -1) {
     methods.push('POST')
   }
-  if (code.indexOf('function del') > -1 || code.indexOf('export const del') > -1) {
+  if (code.indexOf('function DELETE') > -1 || code.indexOf('export const DELETE') > -1) {
     methods.push('DELETE')
   }
-  if (code.indexOf('function patch') > -1 || code.indexOf('export const patch') > -1) {
+  if (code.indexOf('function PATCH') > -1 || code.indexOf('export const PATCH') > -1) {
     methods.push('PATCH')
   }
-  if (code.indexOf('function head') > -1 || code.indexOf('export const head') > -1) {
+  if (code.indexOf('function HEAD') > -1 || code.indexOf('export const HEAD') > -1) {
     methods.push('HEAD')
   }
-  if (code.indexOf('function put') > -1 || code.indexOf('export const put') > -1) {
+  if (code.indexOf('function PUT') > -1 || code.indexOf('export const PUT') > -1) {
     methods.push('PUT')
   }
-  if (code.indexOf('function options') > -1 || code.indexOf('export const options') > -1) {
+  if (code.indexOf('function OPTIONS') > -1 || code.indexOf('export const OPTIONS') > -1) {
     methods.push('OPTIONS')
   }
-  if (code.indexOf('function all') > -1 || code.indexOf('export const all') > -1) {
+  if (code.indexOf('function ALL') > -1 || code.indexOf('export const ALL') > -1) {
     return HttpMethods
   }
   return methods
@@ -137,7 +137,7 @@ export const parseApiRoutesBaseline = (
       const methodIndex = AstroHttpEndpointMethodNames.indexOf(d.getName().toUpperCase())
       if (methodIndex > -1) {
         const astroMethod = AstroHttpEndpointMethodNames[methodIndex]
-        if (astroMethod === 'DEL') {
+        if (astroMethod === 'DELETE') {
           methods.push('DELETE')
         } else if (astroMethod === 'ALL') {
           methods = HttpMethods
