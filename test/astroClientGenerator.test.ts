@@ -388,6 +388,7 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
+        'astro:config:setup': expect.any(Function),
         'astro:build:done': expect.any(Function),
       },
     })
@@ -406,6 +407,7 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
+        'astro:config:setup': expect.any(Function),
         'astro:build:done': expect.any(Function),
       },
     })
@@ -425,6 +427,7 @@ describe('apiClientGenerator', () => {
     expect(result).toEqual({
       name: 'astro-client-generator',
       hooks: {
+        'astro:config:setup': expect.any(Function),
         'astro:build:done': expect.any(Function),
       },
     })

@@ -475,11 +475,10 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@jsheaven/astro-client-generator@1.1.1":
+"@jsheaven/astro-client-generator@../../":
   version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@jsheaven/astro-client-generator/-/astro-client-generator-1.1.1.tgz#30da9b48c00fbd1cc2a70b51bdaff1be78eecd1c"
-  integrity sha512-ChCYiOg/m2ZC0QEAxtzbPIEvMOShBiPqij7ERHJ1ED0J4jiHRj1/nLVouAI96zbXbf3fdB0d2WPKr5QH39uMZg==
   dependencies:
+    chokidar "^3.5.3"
     kleur "^4.1.5"
     ts-morph "^21.0.1"
     yargs-parser "^21.1.1"

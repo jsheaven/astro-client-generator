@@ -23,7 +23,7 @@ export interface ApiResponse {
 
 /** return (await fetch('/api/get-todos', { method: 'GET', ... })).json() */
 export const getTodos = async (options: RequestOptions = {}): Promise<ApiResponse> => {
-    let requestUrl = 'http://localhost:4321/api/get-todos'
+    let requestUrl = 'https://Air-von-Aron.fritz.box--4321.local-credentialless.webcontainer.io/api/get-todos'
     if (options && options.query) {
         requestUrl += '?' + Object.keys(options.query)
             .map((key) => key + '=' + options.query![key])

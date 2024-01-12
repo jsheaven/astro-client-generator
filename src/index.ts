@@ -3,6 +3,7 @@ import fastGlob from 'fast-glob'
 import { resolve, parse, sep } from 'path'
 import { readFileSync, mkdirSync, writeFileSync } from 'fs'
 import { Project } from 'ts-morph'
+import { watch } from "chokidar"
 
 export interface ApiClientGeneratorOptions {
   /** folder to the API directory on disk (source code), default: './src/pages/api' */
@@ -82,6 +83,37 @@ export const apiClientGenerator = (
   return {
     name: 'astro-client-generator',
     hooks: {
+      'astro:config:setup': async () => {
+
+        const watcher = watch(apiGeneratorOptions.apiDir, {
+          ignoreInitial: true,
+          ignorePermissionErrors: true,
+          ignored: /(^|[\/\\])\../, // ignore dotfiles
+        })
+
+        watcher.on('change', (path) => {
+          console.log('🖊️ Endpoint changed: ', path)
+          generateClientApis(apiGeneratorOptions)
+        })
+
+        watcher.on('add', (path, stats) => {
+
+          // check ctime vs mtime to avoid double-triggering
+          if (stats.ctimeMs === stats.mtimeMs) {
+            return
+          }
+
+          // check ctime older than 100ms to avoid initial triggering
+          if (stats.ctimeMs + 100 > Date.now()) {
+            return
+          }
+          console.log('🖊️ Endpoint added: ', path)
+          generateClientApis(apiGeneratorOptions)
+        })
+        
+        // initial build
+        generateClientApis(apiGeneratorOptions)
+      },
       'astro:build:done': async () => {
         generateClientApis(apiGeneratorOptions)
       },
@@ -285,6 +317,8 @@ export const groupByApiRoute = (routes: Array<ApiRouteParseResult>): ApiRoutePar
 
 /** discovers the API endpoints, parses and statically analyzes their code: finally calls the codegen */
 export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOptions) => {
+
+  console.log('⚙️ Generating endpoint clients...')
   apiGeneratorOptions = validateConfig(apiGeneratorOptions)
 
   const apiFolder = resolve(process.cwd(), apiGeneratorOptions.apiDir)
@@ -338,7 +372,7 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
     )
     const parsed = parse(clientFilePath)
     const clientFileDir = parsed.dir
-    const finalFilePath = `${clientFileDir}${sep}${parsed.name}-client.ts`
+    const finalFilePath = `${clientFileDir}${sep}${parsed.name}-client.ts`.toLowerCase()
 
     const project = new Project({
       tsConfigFilePath: apiGeneratorOptions.tsConfigPath,
@@ -346,9 +380,8 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
 
     mkdirSync(clientFileDir, { recursive: true })
 
-
-    // refactor
-    const sourceFile = project.createSourceFile(finalFilePath.toLowerCase(), clientCode, {
+    // refactor and write-out
+    const sourceFile = project.createSourceFile(finalFilePath, clientCode, {
       overwrite: true,
     })
 
@@ -358,12 +391,20 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
         sourceFile.fixUnusedIdentifiers();
     } while (lastWidth !== sourceFile.getFullWidth());
 
+    sourceFile.fixMissingImports();
     sourceFile.organizeImports();
     sourceFile.formatText();
     sourceFile.saveSync();
 
-    //writeFileSync(finalFilePath.toLowerCase(), clientCode, { encoding: 'utf-8' })
+    // final formatting
+    const code = readFileSync(finalFilePath, { encoding: 'utf-8' })
+    // remove all double-blank lines (non-trivial to do using ts-morph)
+    const formattedCode = code.replace(/^\n\n$/g, '\n')
+    // remove all blank lines before opening brackets
+    writeFileSync(finalFilePath, formattedCode, { encoding: 'utf-8' })
   })
+
+  console.log('🚀 Finished building endpoint clients.')
 }
 
 export const produceClientApiRequestImplCode = (

@@ -1,6 +1,6 @@
 {
   "name": "@jsheaven/astro-client-generator",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -24,9 +24,10 @@
     "type": "git"
   },
   "scripts": {
-    "presandbox:example:dev": "IS_SANDBOX=true yarn --cwd ./example/todo-list",
+    "presandbox:example:dev": "yarn build && IS_SANDBOX=true yarn --cwd ./example/todo-list",
     "sandbox:example:dev": "IS_SANDBOX=true yarn --cwd ./example/todo-list build",
     "postsandbox:example:dev": "IS_SANDBOX=true yarn --cwd ./example/todo-list dev",
+    "pretest": "yarn build",
     "test": "NODE_OPTIONS='--experimental-vm-modules --enable-source-maps --no-warnings' jest ./test/*.test.ts",
     "clean": "rm -rf ./dist && rm -rf ./coverage",
     "prebuild": "yarn clean",
@@ -61,6 +62,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "chokidar": "^3.5.3",
     "kleur": "^4.1.5",
     "ts-morph": "^21.0.1",
     "yargs-parser": "^21.1.1"
