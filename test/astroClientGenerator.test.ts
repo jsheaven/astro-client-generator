@@ -39,7 +39,7 @@ describe('astroClientGenerator', () => {
       baseUrl: '',
     })
 
-    result.hooks['astro:build:done']({ config: { site: 'http://localhost:3000' } } as any)
+    result.hooks['astro:build:setup']({ config: { site: 'http://localhost:3000' } } as any)
 
     expect(generateClientApis).toBeDefined()
   })
@@ -52,7 +52,7 @@ describe('astroClientGenerator', () => {
       parser: 'naive',
     })
 
-    result.hooks['astro:build:done']({ config: { site: 'http://localhost:3000' } } as any)
+    result.hooks['astro:build:setup']({ config: { site: 'http://localhost:3000' } } as any)
 
     expect(generateClientApis).toBeDefined()
   })
@@ -66,7 +66,7 @@ describe('astroClientGenerator', () => {
       site: 'https://localhost:3001',
     })
 
-    result.hooks['astro:build:done']({ config: { site: 'http://localhost:3000' } } as any)
+    result.hooks['astro:build:setup']({ config: { site: 'http://localhost:3000' } } as any)
 
     expect(generateClientApis).toBeDefined()
   })

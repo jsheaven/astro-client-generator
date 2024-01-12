@@ -1,7 +1,7 @@
 import type { AstroIntegration } from 'astro'
 import fastGlob from 'fast-glob'
 import { resolve, parse, sep } from 'path'
-import { readFileSync, mkdirSync, writeFileSync } from 'fs'
+import { readFileSync, mkdirSync } from 'fs'
 import { Project } from 'ts-morph'
 import { watch } from "chokidar"
 
