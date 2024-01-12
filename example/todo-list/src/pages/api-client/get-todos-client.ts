@@ -1,5 +1,5 @@
-import { APIRoute } from 'astro'
-import { Todo } from '../../model/Todo'
+import { type APIRoute } from 'astro'
+import { type Todo } from '../../model/Todo'
 import { readFile } from 'fs/promises'
 
 
@@ -25,7 +25,7 @@ export interface ApiResponse {
 
 /** return (await fetch('/api/get-todos', { method: 'GET', ... })).json() */
 export const getTodos = async(options: RequestOptions = {}): Promise<ApiResponse> => {
-  let requestUrl = 'http://localhost:3000/api/get-todos'
+  let requestUrl = 'http://localhost:4321/api/get-todos'
   if (options && options.query) {
     requestUrl += '?' + Object.keys(options.query)
         .map((key) => key + '=' + options.query![key])

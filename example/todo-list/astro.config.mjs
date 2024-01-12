@@ -14,8 +14,8 @@ export default defineConfig({
     apiClientGenerator({
       // example for CodeSandbox
       site: process.env.IS_SANDBOX
-        ? `https://${hostname()}--3000.local-credentialless.webcontainer.io`
-        : 'http://localhost:3000',
+        ? `https://${hostname()}--4321.local-credentialless.webcontainer.io`
+        : 'http://localhost:4321',
     }),
   ],
 })

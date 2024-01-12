@@ -1,5 +1,5 @@
-import { APIContext, APIRoute } from 'astro'
-import { Todo } from '../../model/Todo'
+import { type APIContext, type APIRoute } from 'astro'
+import { type Todo } from '../../model/Todo'
 import { readFile, writeFile } from 'fs/promises'
 
 
@@ -25,7 +25,7 @@ export interface ApiResponse {
 
 /** return (await fetch('/api/update-todo', { method: 'PATCH', ... })).json() */
 export const updateTodo = async(payload: ApiRequest, options: RequestOptions = {}): Promise<ApiResponse> => {
-  let requestUrl = 'http://localhost:3000/api/update-todo'
+  let requestUrl = 'http://localhost:4321/api/update-todo'
   if (options && options.query) {
     requestUrl += '?' + Object.keys(options.query)
         .map((key) => key + '=' + options.query![key])

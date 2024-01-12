@@ -1,5 +1,5 @@
-import { APIContext, APIRoute } from 'astro'
-import { Todo } from '../../model/Todo'
+import { type APIContext, type APIRoute } from 'astro'
+import { type Todo } from '../../model/Todo'
 import { readFile, writeFile } from 'fs/promises'
 
 export interface ApiResponse {

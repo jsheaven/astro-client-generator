@@ -340,8 +340,29 @@ export const generateClientApis = (apiGeneratorOptions: ApiClientGeneratorOption
     const clientFileDir = parsed.dir
     const finalFilePath = `${clientFileDir}${sep}${parsed.name}-client.ts`
 
+    const project = new Project({
+      tsConfigFilePath: apiGeneratorOptions.tsConfigPath,
+    })
+
     mkdirSync(clientFileDir, { recursive: true })
-    writeFileSync(finalFilePath.toLowerCase(), clientCode, { encoding: 'utf-8' })
+
+
+    // refactor
+    const sourceFile = project.createSourceFile(finalFilePath.toLowerCase(), clientCode, {
+      overwrite: true,
+    })
+
+    let lastWidth: number;
+    do {
+        lastWidth = sourceFile.getFullWidth();
+        sourceFile.fixUnusedIdentifiers();
+    } while (lastWidth !== sourceFile.getFullWidth());
+
+    sourceFile.organizeImports();
+    sourceFile.formatText();
+    sourceFile.saveSync();
+
+    //writeFileSync(finalFilePath.toLowerCase(), clientCode, { encoding: 'utf-8' })
   })
 }
 
