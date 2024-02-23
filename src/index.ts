@@ -18,6 +18,8 @@ export interface ApiClientGeneratorOptions {
   parser?: 'naive' | 'baseline'
   /** site URL to request from. Optional, usually auto-discovered from Astro config  */
   site?: string
+  /** disable auto-discovery of site URL, default: false */
+  disableSiteAutoDiscovery?: boolean
 }
 
 export const apiGeneratorOptionsDefaults: ApiClientGeneratorOptions = {
@@ -90,7 +92,7 @@ export const apiClientGenerator = (
           `http://${address.address}:${address.port}` :
           `http://[${address.address}]:${address.port}`
 
-        if (apiGeneratorOptions.site && apiGeneratorOptions.site !== actualSite) {
+        if (apiGeneratorOptions.site && apiGeneratorOptions.site !== actualSite && !apiGeneratorOptions.disableSiteAutoDiscovery) {
           console.log(`🔄 Endpoint host has changed to ${actualSite}. Updating site accordingly.`)
           apiGeneratorOptions.site = actualSite
         }
